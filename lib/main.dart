@@ -1,6 +1,6 @@
 import 'package:diinq/Components/Button.dart';
 import 'package:diinq/Components/TextBox.dart';
-import 'package:diinq/Providers/HousesProvider.dart';
+import 'package:diinq/Providers/UserData.dart';
 import 'package:diinq/Screens/LoginSignUpScreen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 

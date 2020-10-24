@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diinq/Providers/UserData.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class Auth extends ChangeNotifier {
   AuthState currentState = AuthState.lUnknown;
@@ -106,8 +108,9 @@ class Auth extends ChangeNotifier {
 
   }
 
-  Future<void> signOut() async{
+  Future<void> signOut(context) async{
     await FirebaseAuth.instance.signOut();
+    Provider.of<UserData>(context, listen: false).clear();
   }
 
 }

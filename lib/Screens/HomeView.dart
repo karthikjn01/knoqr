@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diinq/Components/PersonCard.dart';
+import 'package:diinq/Components/PopUp.dart';
 import 'package:diinq/Components/Settings.dart';
-import 'package:diinq/Providers/HousesProvider.dart';
+import 'package:diinq/Providers/Auth.dart';
+import 'package:diinq/Providers/UserData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 import 'QRCode.dart';
 
@@ -54,23 +59,34 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        print("Tap");
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => HomeSettings(_house)));
-                      },
-                      child: Container(
-                        height: 30.0,
-                        width: 30.0,
-                        margin: EdgeInsets.all(10.0),
-                        child: Icon(
-                          Icons.settings,
-                          color: Theme.of(context).primaryColor,
-                          size: 30.0,
-                        ),
-                      ),
-                    ),
+                    _house.owner ==
+                            Provider.of<Auth>(context, listen: false).user.email
+                        ? GestureDetector(
+                            onTap: () {
+                              print("Tap");
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                      builder: (_) => HomeSettings(_house)))
+                                  .then((value) {
+                                _house.update().then((v) {
+                                  setState(() {
+                                    _house = v;
+                                  });
+                                });
+                              });
+                            },
+                            child: Container(
+                              height: 30.0,
+                              width: 30.0,
+                              margin: EdgeInsets.all(10.0),
+                              child: Icon(
+                                Icons.settings,
+                                color: Theme.of(context).primaryColor,
+                                size: 30.0,
+                              ),
+                            ),
+                          )
+                        : Container(),
                   ],
                 ),
               ],
@@ -104,6 +120,15 @@ class HomeSettings extends StatelessWidget {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => MemberView(_house.id)));
             }),
+            SettingComponent(
+                "Generate New Code", "Generate a new QR code", "Generate", () {
+              FirebaseFirestore.instance
+                  .collection("Houses")
+                  .doc(_house.id)
+                  .update({
+                "code": Uuid().v1(),
+              });
+            })
           ],
         ),
       ),
@@ -145,9 +170,59 @@ class _MemberViewState extends State<MemberView> {
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
+          elevation: 0.0,
           backgroundColor: Theme.of(context).primaryColor,
-          onPressed: () {},
-          label: Text("Add", style: Theme.of(context).textTheme.caption.copyWith(color: Colors.white),),
+          onPressed: () {
+            PopUp.fullScreenPopUp(
+                "New Member",
+                "Add a member to the house! Type in the email below!",
+                "Confirm", (TextEditingController t) {
+              String email = t.value.text;
+              if (house.members.contains(email)) {
+                Navigator.pop(context);
+                PopUp.errorPop(
+                    "Already in the House",
+                    "This person has already been added to the house!",
+                    context);
+                return;
+              }
+              FirebaseFirestore.instance
+                  .collection("People")
+                  .where("email", isEqualTo: email)
+                  .get()
+                  .then((value) {
+                if (value.docs.length == 1) {
+                  FirebaseFirestore.instance
+                      .collection("Houses")
+                      .doc(house.id)
+                      .update({
+                    "members": FieldValue.arrayUnion([email])
+                  }).then((value) {
+                    Navigator.pop(context);
+                    PopUp.errorPop(
+                        "Person Added!",
+                        "Ask them to open up the app, and your house should be on the list!",
+                        context);
+                  });
+                } else {
+                  Navigator.pop(context);
+                  PopUp.errorPop(
+                      "Email not found!",
+                      "Please make sure that they have signed up to knoqr!",
+                      context);
+                }
+              });
+            }, (String s) {
+              return s.isNotEmpty;
+            }, context);
+          },
+          label: Text(
+            "Add",
+            style: Theme.of(context)
+                .textTheme
+                .caption
+                .copyWith(color: Colors.white),
+          ),
           icon: Icon(Icons.add),
         ),
         body: Column(
@@ -159,9 +234,24 @@ class _MemberViewState extends State<MemberView> {
             Expanded(
               child: ListView.builder(
                 itemBuilder: (c, i) {
-                  return Container();
+                  return PersonCard(house.members[i], () {
+                    print("REMOVING ${house.members[i]}");
+                    if (house.members[i] == house.owner) {
+                      PopUp.errorPop(
+                          "Can't remove the owner!",
+                          "Can't remove the owner, please choose someone else",
+                          c);
+                      return;
+                    }
+                    FirebaseFirestore.instance
+                        .collection("Houses")
+                        .doc(house.id)
+                        .update({
+                      "members": FieldValue.arrayRemove([house.members[i]])
+                    });
+                  });
                 },
-                itemCount: house.members.length,
+                itemCount: house != null ? house.members.length : 0,
               ),
             )
           ],

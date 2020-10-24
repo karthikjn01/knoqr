@@ -25,7 +25,7 @@ class PopUp {
       backgroundColor: Colors.white,
       borderRadius: 20.0,
       padding: EdgeInsets.all(20.0),
-      duration: Duration(seconds: 1),
+      duration: Duration(seconds: 2),
       isDismissible: false,
     ).show(context);
   }

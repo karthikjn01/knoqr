@@ -1,4 +1,4 @@
-import 'package:diinq/Providers/HousesProvider.dart';
+import 'package:diinq/Providers/UserData.dart';
 import 'package:flutter/material.dart';
 
 class HouseCard extends StatelessWidget {

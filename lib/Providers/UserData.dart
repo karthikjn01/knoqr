@@ -68,6 +68,12 @@ class UserData extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  void clear() {
+    state = 0;
+    houses.clear();
+    email = "";
+  }
 }
 
 class House {
@@ -97,5 +103,13 @@ class House {
 
     h.id = id;
     return h;
+  }
+
+  Future<House> update() async {
+    DocumentSnapshot sc = await FirebaseFirestore.instance
+        .collection("Houses")
+        .doc(this.id)
+        .get();
+    return fromMap(sc.data(), sc.id);
   }
 }
