@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "241249523121",
+    "firebase_url": "https://doooooorbell.firebaseio.com",
+    "project_id": "doooooorbell",
+    "storage_bucket": "doooooorbell.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241249523121:android:df1b96abad81eaf1629990",
+        "android_client_info": {
+          "package_name": "one.app.diinq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241249523121-pv5ur61s471kni7gi2nob5ndk450t21m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyAfV9LSVmIyTq_-DN54WicYRQyYsl6ak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241249523121-pv5ur61s471kni7gi2nob5ndk450t21m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
