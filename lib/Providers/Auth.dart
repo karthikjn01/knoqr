@@ -9,7 +9,7 @@ class Auth extends ChangeNotifier {
   AuthState currentState = AuthState.lUnknown;
   User user;
 
-  Auth(){
+  Auth() {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -20,9 +20,19 @@ class Auth extends ChangeNotifier {
         currentState = AuthState.lIn;
         this.user = user;
 
-        FirebaseMessaging().onTokenRefresh.listen((event) {
-          FirebaseFirestore.instance.collection("People").doc(user.uid).set({"email": user.email, "uid": user.uid, "fcm": event});
+        FirebaseMessaging().getToken().then((value) {
+          print("VALUE_VALUE: $value");
+          FirebaseFirestore.instance.collection("People").doc(user.uid). set ({
+          "email": user.email, "uid": user.uid, "fcm": value
+          });
         });
+
+        FirebaseMessaging().onTokenRefresh.listen((event) {
+          FirebaseFirestore.instance.collection("People").doc(user.uid).set(
+              {"email": user.email, "uid": user.uid, "fcm": event});
+        });
+
+        print(FirebaseMessaging().requestNotificationPermissions());
 
         FirebaseMessaging().configure(
           onMessage: (Map<String, dynamic> message) async {
@@ -40,18 +50,15 @@ class Auth extends ChangeNotifier {
       }
       notifyListeners();
     });
-
-
   }
 
   Future<String> registerUsingEmail(String email, String password) async {
     try {
       UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -65,27 +72,27 @@ class Auth extends ChangeNotifier {
     }
   }
 
-  static Future<void> resetPassword(String email){
+  static Future<void> resetPassword(String email) {
     return FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   }
 
-  static Future<void> confirmReset(String code, String password){
-    return FirebaseAuth.instance.confirmPasswordReset(code: code, newPassword: password);
+  static Future<void> confirmReset(String code, String password) {
+    return FirebaseAuth.instance.confirmPasswordReset(
+        code: code, newPassword: password);
   }
 
-  static Future<String> confirmResetCode(String code){
+  static Future<String> confirmResetCode(String code) {
     return FirebaseAuth.instance.verifyPasswordResetCode(code);
   }
 
-  static Future<List<String>> getSignInMethods(String email){
-
+  static Future<List<String>> getSignInMethods(String email) {
     return FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
   }
 
   Future<String> signinUsingEmail(String email, String password) async {
     try {
       UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -104,11 +111,11 @@ class Auth extends ChangeNotifier {
     var _fcm = FirebaseMessaging();
 
     var token = await _fcm.getToken();
-    await FirebaseFirestore.instance.collection("People").doc(user.uid).set({"email": user.email, "uid": user.uid, "fcm": token});
-
+    await FirebaseFirestore.instance.collection("People").doc(user.uid).set(
+        {"email": user.email, "uid": user.uid, "fcm": token});
   }
 
-  Future<void> signOut(context) async{
+  Future<void> signOut(context) async {
     await FirebaseAuth.instance.signOut();
     Provider.of<UserData>(context, listen: false).clear();
   }
