@@ -13,7 +13,7 @@ class UserData extends ChangeNotifier {
   void init(String email) {
     state = 0;
     this.email = email;
-    notifyListeners();
+    // notifyListeners();
 
     _db
         .collection("Houses")
