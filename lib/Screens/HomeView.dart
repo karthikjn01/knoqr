@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diinq/Components/MessageCard.dart';
 import 'package:diinq/Components/PersonCard.dart';
 import 'package:diinq/Components/PopUp.dart';
 import 'package:diinq/Components/Settings.dart';
@@ -91,6 +92,15 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ],
             ),
+            Text("Here are the last 10 messages:", style: Theme.of(context).textTheme.caption,),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (c, i){
+                  return MessageCard(_house.messages[i]);
+                },
+                itemCount: _house.messages.length,
+              ),
+            )
           ],
         ),
       ),

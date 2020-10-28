@@ -59,11 +59,10 @@ class _HomePageState extends State<HomePage> {
                               .signOut(context);
                         },
                         child: Container(
-                          height: 40.0,
-                          width: 40.0,
-                          margin: EdgeInsets.all(20.0),
-                          child: Icon(Icons.person_remove)
-                        ),
+                            height: 40.0,
+                            width: 40.0,
+                            margin: EdgeInsets.all(20.0),
+                            child: Icon(Icons.person_remove)),
                       ),
                     ],
                   ),
@@ -129,7 +128,10 @@ class _HomePageState extends State<HomePage> {
                       height: 40.0,
                       width: 40.0,
                       margin: EdgeInsets.all(20.0),
-                      child: Icon(Icons.person_remove, color: Theme.of(context).primaryColor,),
+                      child: Icon(
+                        Icons.person_remove,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
                 ],

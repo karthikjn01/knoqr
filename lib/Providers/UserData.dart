@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class UserData extends ChangeNotifier {
   int state = 0; //0 = loading, 1 = empty, 2 = !empty
@@ -37,6 +39,7 @@ class UserData extends ChangeNotifier {
       "members": [email],
       "owner": email,
       "name": name,
+      "code": Uuid().v4(),
       "messages": [],
     }).then((value) {
       refresh();
@@ -83,7 +86,7 @@ class House {
   String fcm;
   List<String> members;
   String owner;
-  List<String> messages;
+  List<Message> messages;
 
   static House fromMap(Map<String, dynamic> data, String id) {
     House h = House();
@@ -94,12 +97,15 @@ class House {
         .toList();
     h.owner = data["owner"];
     h.name = data["name"];
+    h.messages = [];
     h.messages = data["messages"]
-        .map((s) => s as String)
+        .map((s) => Message(
+            s["message"], DateTime.fromMillisecondsSinceEpoch(s["time"])))
         .toList()
-        .cast<String>()
+        .cast<Message>()
         .toList();
     h.code = data["code"];
+    print('MESSAGES: ${h.messages}');
 
     h.id = id;
     return h;
@@ -111,5 +117,23 @@ class House {
         .doc(this.id)
         .get();
     return fromMap(sc.data(), sc.id);
+  }
+}
+
+class Message {
+  String message;
+  DateTime dateTime;
+
+  Message(this.message, this.dateTime);
+
+  String getTime() {
+    return DateFormat("HH:mm dd-MM-yy").format(dateTime.toUtc());
+  }
+
+  String getMessage() {
+    if (message == "<DEFAULT RING>") {
+      return "Someone rang at the door";
+    }
+    return "$message";
   }
 }
