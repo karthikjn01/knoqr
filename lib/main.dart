@@ -109,165 +109,313 @@ class _LoadingScreenState extends State<LoadingScreen> {
           statusBarIconBrightness: Brightness.dark,
           systemNavigationBarIconBrightness: Brightness.dark),
     );
-
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _repeatPassword.clear();
-                  setState(() {
-                    signIn = !signIn;
-                  });
-                },
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).dividerColor,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          bottomLeft: Radius.circular(20.0))),
-                  child: Center(
-                      child: Text(
-                    signIn ? "Sign Up" : "Log In",
-                    style: Theme.of(context).textTheme.button.copyWith(
-                        color: Theme.of(context).primaryColor, fontSize: 14),
-                  )),
-                ),
-              )
-            ],
-          ),
-          Center(
-            child: Image.asset(
-              "images/logo/logot.png",
-              width: 180,
-              height: 180,
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Column(
+    return SafeArea(child: Scaffold(
+      body: LayoutBuilder(
+        builder: (c, b) {
+          if (MediaQuery.of(context).size.shortestSide > 600) {
+            return Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TextBox(_email, "Email"),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: TextBox(
-                        _password,
-                        "Password",
-                        conceal: true,
-                      ),
-                    ),
-                    IgnorePointer(
-                      ignoring: signIn,
-                      child: AnimatedOpacity(
-                        opacity: signIn ? 0.0 : 1.0,
-                        duration: Duration(milliseconds: 200),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: TextBox(_repeatPassword, "Repeat Password",
-                              conceal: true),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              IgnorePointer(
-                ignoring: !signIn,
-                child: GestureDetector(
-                  onTap: () {
-                    if (_email.value.text.trim().isEmpty) {
-                      PopUp.errorPop("Enter a valid Email",
-                          "Please enter a valid email address!", context);
-                      return;
-                    }
-                    Auth.getSignInMethods(_email.value.text).then((value) {
-                      if (value.length == 0) {
-                        PopUp.errorPop("Email address not recognised",
-                            "Please sign up first!", context);
-                        return;
-                      }
-                      Auth.resetPassword(_email.value.text);
-                      PopUp.errorPop(
-                          "Check Your Email",
-                          "An Email has been sent for you to rest your password!",
-                          context);
-                    });
-                  },
-                  child: AnimatedOpacity(
-                    opacity: !signIn ? 0.0 : 1.0,
-                    duration: Duration(milliseconds: 200),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    GestureDetector(
+                      onTap: () {
+                        _repeatPassword.clear();
+                        setState(() {
+                          signIn = !signIn;
+                        });
+                      },
                       child: Container(
                         padding: EdgeInsets.symmetric(
                             vertical: 20.0, horizontal: 20.0),
                         margin: EdgeInsets.symmetric(vertical: 10.0),
                         decoration: BoxDecoration(
                             color: Theme.of(context).dividerColor,
-                            borderRadius: BorderRadius.circular(20.0)),
-                        child: Text(
-                          "Reset Password",
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                bottomLeft: Radius.circular(20.0))),
+                        child: Center(
+                            child: Text(
+                          signIn ? "Sign Up" : "Log In",
                           style: Theme.of(context).textTheme.button.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontSize: 14),
+                        )),
+                      ),
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Image.asset(
+                            "images/logo/logo_o.png",
+                          ),
                         ),
                       ),
-                    ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: SingleChildScrollView(
+                                  physics: BouncingScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: TextBox(_email, "Email"),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: TextBox(
+                                          _password,
+                                          "Password",
+                                          conceal: true,
+                                        ),
+                                      ),
+                                      IgnorePointer(
+                                        ignoring: signIn,
+                                        child: AnimatedOpacity(
+                                          opacity: signIn ? 0.0 : 1.0,
+                                          duration: Duration(milliseconds: 200),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: TextBox(
+                                                _repeatPassword, "Repeat Password",
+                                                conceal: true),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                IgnorePointer(
+                                  ignoring: !signIn,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (_email.value.text.trim().isEmpty) {
+                                        PopUp.errorPop(
+                                            "Enter a valid Email",
+                                            "Please enter a valid email address!",
+                                            context);
+                                        return;
+                                      }
+                                      Auth.getSignInMethods(_email.value.text)
+                                          .then((value) {
+                                        if (value.length == 0) {
+                                          PopUp.errorPop(
+                                              "Email address not recognised",
+                                              "Please sign up first!",
+                                              context);
+                                          return;
+                                        }
+                                        Auth.resetPassword(_email.value.text);
+                                        PopUp.errorPop(
+                                            "Check Your Email",
+                                            "An Email has been sent for you to rest your password!",
+                                            context);
+                                      });
+                                    },
+                                    child: AnimatedOpacity(
+                                      opacity: !signIn ? 0.0 : 1.0,
+                                      duration: Duration(milliseconds: 200),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 20.0, horizontal: 20.0),
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 10.0),
+                                          decoration: BoxDecoration(
+                                              color: Theme.of(context).dividerColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0)),
+                                          child: Text(
+                                            "Reset Password",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .button
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    fontSize: 14),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Stack(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10.0, horizontal: 30.0),
+                                            child: ThicButton("Log In", () async {
+                                              //send login req
+                                              Provider.of<Auth>(context,
+                                                      listen: false)
+                                                  .signinUsingEmail(
+                                                      _email.value.text,
+                                                      _password.value.text)
+                                                  .then((value) {
+                                                print("VALUE: $value");
+                                                switch (value) {
+                                                  case "no user":
+                                                    PopUp.errorPop(
+                                                        "Existential Crisis",
+                                                        "You don't seem to exist yet, tap the sign up button in the top right corner!",
+                                                        context);
+                                                    break;
+                                                  case "wrong":
+                                                    PopUp.errorPop(
+                                                        "Incorrect Password",
+                                                        "Well that was wrong!",
+                                                        context);
+                                                    break;
+                                                }
+                                              });
+                                            }),
+                                          ),
+                                          IgnorePointer(
+                                            ignoring: signIn,
+                                            child: AnimatedOpacity(
+                                              opacity: signIn ? 0.0 : 1.0,
+                                              duration: Duration(milliseconds: 200),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                    horizontal: 30.0),
+                                                child: ThicButton("Sign Up", () {
+                                                  print("Sign Up");
+                                                  if (_password.value.text !=
+                                                      _repeatPassword.value.text) {
+                                                    PopUp.errorPop(
+                                                        "Passwords Don't Match",
+                                                        "Make sure the passwords match!",
+                                                        context);
+                                                    return;
+                                                  }
+                                                  Provider.of<Auth>(context,
+                                                          listen: false)
+                                                      .registerUsingEmail(
+                                                          _email.value.text,
+                                                          _password.value.text)
+                                                      .then((value) {
+                                                    print("VALUE: $value");
+                                                    switch (value) {
+                                                      case "weak":
+                                                        PopUp.errorPop(
+                                                            "Weak Password",
+                                                            "The password is too weak!",
+                                                            context);
+                                                        break;
+                                                      case "exists":
+                                                        PopUp.errorPop(
+                                                            "Existential Crisis",
+                                                            "You already exist!",
+                                                            context);
+                                                        break;
+                                                    }
+                                                  });
+                                                }),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ),
+              ],
+            );
+          }
+          return Column(
+            children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(
-                    child: Stack(
+                  GestureDetector(
+                    onTap: () {
+                      _repeatPassword.clear();
+                      setState(() {
+                        signIn = !signIn;
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 20.0),
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).dividerColor,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              bottomLeft: Radius.circular(20.0))),
+                      child: Center(
+                          child: Text(
+                        signIn ? "Sign Up" : "Log In",
+                        style: Theme.of(context).textTheme.button.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 14),
+                      )),
+                    ),
+                  )
+                ],
+              ),
+              Center(
+                child: Image.asset(
+                  "images/logo/logot.png",
+                  width: 180,
+                  height: 180,
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
                       children: [
                         Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 30.0),
-                          child: ThicButton("Log In", () async {
-                            //send login req
-                            Provider.of<Auth>(context, listen: false)
-                                .signinUsingEmail(
-                                    _email.value.text, _password.value.text)
-                                .then((value) {
-                              print("VALUE: $value");
-                              switch (value) {
-                                case "no user":
-                                  PopUp.errorPop(
-                                      "Existential Crisis",
-                                      "You don't seem to exist yet, tap the sign up button in the top right corner!",
-                                      context);
-                                  break;
-                                case "wrong":
-                                  PopUp.errorPop("Incorrect Password",
-                                      "Well that was wrong!", context);
-                                  break;
-                              }
-                            });
-                          }),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextBox(_email, "Email"),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextBox(
+                            _password,
+                            "Password",
+                            conceal: true,
+                          ),
                         ),
                         IgnorePointer(
                           ignoring: signIn,
@@ -275,46 +423,148 @@ class _LoadingScreenState extends State<LoadingScreen> {
                             opacity: signIn ? 0.0 : 1.0,
                             duration: Duration(milliseconds: 200),
                             child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: TextBox(_repeatPassword, "Repeat Password",
+                                  conceal: true),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  IgnorePointer(
+                    ignoring: !signIn,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (_email.value.text.trim().isEmpty) {
+                          PopUp.errorPop("Enter a valid Email",
+                              "Please enter a valid email address!", context);
+                          return;
+                        }
+                        Auth.getSignInMethods(_email.value.text).then((value) {
+                          if (value.length == 0) {
+                            PopUp.errorPop("Email address not recognised",
+                                "Please sign up first!", context);
+                            return;
+                          }
+                          Auth.resetPassword(_email.value.text);
+                          PopUp.errorPop(
+                              "Check Your Email",
+                              "An Email has been sent for you to rest your password!",
+                              context);
+                        });
+                      },
+                      child: AnimatedOpacity(
+                        opacity: !signIn ? 0.0 : 1.0,
+                        duration: Duration(milliseconds: 200),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20.0, horizontal: 20.0),
+                            margin: EdgeInsets.symmetric(vertical: 10.0),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).dividerColor,
+                                borderRadius: BorderRadius.circular(20.0)),
+                            child: Text(
+                              "Reset Password",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .button
+                                  .copyWith(
+                                      color: Theme.of(context).primaryColor,
+                                      fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            Padding(
                               padding: EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 30.0),
-                              child: ThicButton("Sign Up", () {
-                                print("Sign Up");
-                                if (_password.value.text !=
-                                    _repeatPassword.value.text) {
-                                  PopUp.errorPop(
-                                      "Passwords Don't Match",
-                                      "Make sure the passwords match!",
-                                      context);
-                                  return;
-                                }
+                              child: ThicButton("Log In", () async {
+                                //send login req
                                 Provider.of<Auth>(context, listen: false)
-                                    .registerUsingEmail(
+                                    .signinUsingEmail(
                                         _email.value.text, _password.value.text)
                                     .then((value) {
                                   print("VALUE: $value");
                                   switch (value) {
-                                    case "weak":
-                                      PopUp.errorPop("Weak Password",
-                                          "The password is too weak!", context);
+                                    case "no user":
+                                      PopUp.errorPop(
+                                          "Existential Crisis",
+                                          "You don't seem to exist yet, tap the sign up button in the top right corner!",
+                                          context);
                                       break;
-                                    case "exists":
-                                      PopUp.errorPop("Existential Crisis",
-                                          "You already exist!", context);
+                                    case "wrong":
+                                      PopUp.errorPop("Incorrect Password",
+                                          "Well that was wrong!", context);
                                       break;
                                   }
                                 });
                               }),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
+                            IgnorePointer(
+                              ignoring: signIn,
+                              child: AnimatedOpacity(
+                                opacity: signIn ? 0.0 : 1.0,
+                                duration: Duration(milliseconds: 200),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 30.0),
+                                  child: ThicButton("Sign Up", () {
+                                    print("Sign Up");
+                                    if (_password.value.text !=
+                                        _repeatPassword.value.text) {
+                                      PopUp.errorPop(
+                                          "Passwords Don't Match",
+                                          "Make sure the passwords match!",
+                                          context);
+                                      return;
+                                    }
+                                    Provider.of<Auth>(context, listen: false)
+                                        .registerUsingEmail(_email.value.text,
+                                            _password.value.text)
+                                        .then((value) {
+                                      print("VALUE: $value");
+                                      switch (value) {
+                                        case "weak":
+                                          PopUp.errorPop(
+                                              "Weak Password",
+                                              "The password is too weak!",
+                                              context);
+                                          break;
+                                        case "exists":
+                                          PopUp.errorPop("Existential Crisis",
+                                              "You already exist!", context);
+                                          break;
+                                      }
+                                    });
+                                  }),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
+              )
             ],
-          )
-        ],
+          );
+        },
       ),
     ));
   }
