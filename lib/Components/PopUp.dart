@@ -49,7 +49,6 @@ class PopUp {
             content: IntrinsicWidth(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-
                 children: [
                   Text(
                     title,
@@ -58,13 +57,15 @@ class PopUp {
                   Text(description),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: TextBox(_houseName, "House Name"),
+                    child: TextBox(_houseName, title),
                   ),
                   ThicButton(
                     button,
                     () {
                       if (isValid(_houseName.value.text)) {
                         onConfirm(_houseName);
+                      }else{
+                        PopUp.errorPop("Please Enter a valid value", "The text provided was invalid", context);
                       }
                     },
                   )
@@ -73,6 +74,54 @@ class PopUp {
             ),
           );
         });
+      },
+    );
+  }
+
+  static void confirm(String title, String description, String confirmButton,
+      String cancelButton, Function onConfirm, Function onCancel, context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          content: IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(description),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 8.0),
+                  child: ThicButton(
+                    confirmButton,
+                    () {
+                      onConfirm();
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ThicButton(
+                    cancelButton,
+                    () {
+                      onCancel();
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
       },
     );
   }

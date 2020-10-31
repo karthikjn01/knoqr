@@ -3,6 +3,7 @@ import 'package:diinq/Components/HouseCard.dart';
 import 'package:diinq/Components/PopUp.dart';
 import 'package:diinq/Providers/Auth.dart';
 import 'package:diinq/Providers/UserData.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +30,6 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: Consumer<UserData>(
         builder: (c, ud, child) {
-          print(ud.state);
           if (ud.email.isEmpty) {
             ud.init(email);
           }
@@ -38,67 +38,76 @@ class _HomePageState extends State<HomePage> {
           }
           if (ud.houses.length == 0) {
             return Scaffold(
-              body: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        child: Image.asset(
-                          "images/logo/logo_o.png",
-                          height: 30.0,
-                          width: 30.0,
+              body: RefreshIndicator(
+                onRefresh: () {
+                  ud.refresh();
+                  return;
+                },
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Provider.of<Auth>(context, listen: false)
+                                .signOut(context);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20.0, horizontal: 20.0),
+                            margin: EdgeInsets.symmetric(vertical: 10.0),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20.0),
+                                    bottomLeft: Radius.circular(20.0))),
+                            child: Center(
+                                child: Text(
+                              "Log Out",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .button
+                                  .copyWith(fontSize: 14),
+                            )),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                        child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: Text(
+                          "Whoa, you don't have a house yet, do you want to create one?",
+                          style: Theme.of(context).textTheme.headline6,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          print('TRYING TO LOGOUT!');
-                          Provider.of<Auth>(context, listen: false)
-                              .signOut(context);
-                        },
-                        child: Container(
-                            height: 40.0,
-                            width: 40.0,
-                            margin: EdgeInsets.all(20.0),
-                            child: Icon(Icons.person_remove)),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                      child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: Text(
-                        "Whoa, you don't have a house yet, do you want to create one?",
-                        style: Theme.of(context).textTheme.headline6,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-                    child: ThicButton("Create House", () {
-                      PopUp.fullScreenPopUp(
-                          "House Name",
-                          "Give your homely home a name!",
-                          "Confirm", (TextEditingController t) {
-                        ud.create(t.value.text);
-                        Navigator.pop(context);
-                      }, (s) {
-                        if (s.trim().isNotEmpty) {
-                          return true;
-                        } else {
-                          PopUp.errorPop("Your house needs a name!",
-                              "Give your house a name!", context);
-                          return false;
-                        }
-                      }, context);
-                    }),
-                  )
-                ],
+                    )),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 30.0),
+                      child: ThicButton("Create House", () {
+                        PopUp.fullScreenPopUp(
+                            "House Name",
+                            "Give your homely home a name!",
+                            "Confirm", (TextEditingController t) {
+                          ud.create(t.value.text);
+                          Navigator.pop(context);
+                        }, (s) {
+                          if (s.trim().isNotEmpty) {
+                            return true;
+                          } else {
+                            PopUp.errorPop("Your house needs a name!",
+                                "Give your house a name!", context);
+                            return false;
+                          }
+                        }, context);
+                      }),
+                    )
+                  ],
+                ),
               ),
             );
           }
@@ -107,31 +116,30 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    margin:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                    child: Image.asset(
-                      "images/logo/logo_o.png",
-                      height: 30.0,
-                      width: 30.0,
-                    ),
-                  ),
                   GestureDetector(
                     onTap: () {
-                      print('TRYING TO LOGOUT!');
                       Provider.of<Auth>(context, listen: false)
                           .signOut(context);
                     },
                     child: Container(
-                      height: 40.0,
-                      width: 40.0,
-                      margin: EdgeInsets.all(20.0),
-                      child: Icon(
-                        Icons.person_remove,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 20.0),
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              bottomLeft: Radius.circular(20.0))),
+                      child: Center(
+                          child: Text(
+                        "Log Out",
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .copyWith(fontSize: 14),
+                      )),
                     ),
                   ),
                 ],
@@ -143,15 +151,22 @@ class _HomePageState extends State<HomePage> {
                     ud.refresh();
                     return;
                   },
-                  child: ListView.builder(
+                  child: GridView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
                     itemBuilder: (c, i) {
                       return HouseCard(ud.houses[i], () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => HomeView(ud.houses[i])));
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                                builder: (_) => HomeView(ud.houses[i])))
+                            .then((value) => ud.refresh());
                       });
                     },
                     itemCount: ud.houses.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 5.0,
+                        crossAxisSpacing: 5.0,
+                        childAspectRatio: 1.0),
                   ),
                 ),
               ),

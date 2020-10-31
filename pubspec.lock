@@ -212,6 +212,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.15.0"
   http:
     dependency: transitive
     description:
@@ -247,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.3-nullsafety.1"
+  keyboard_utils:
+    dependency: "direct main"
+    description:
+      name: keyboard_utils
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.4"
   matcher:
     dependency: transitive
     description:
@@ -407,5 +421,5 @@ packages:
     source: hosted
     version: "2.2.1"
 sdks:
-  dart: ">=2.10.0-110 <=2.11.0-213.1.beta"
+  dart: ">=2.10.0 <=2.11.0-213.1.beta"
   flutter: ">=1.16.0 <2.0.0"

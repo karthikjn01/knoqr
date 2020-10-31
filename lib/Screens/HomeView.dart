@@ -28,6 +28,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<Auth>(context, listen: false).context = context;
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -48,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
                       onTap: () {
                         print("Tap");
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => QRCodeGenerator(_house.code)));
+                            builder: (_) => QRCodeGenerator(_house)));
                       },
                       child: Container(
                         height: 30.0,
@@ -72,6 +73,8 @@ class _HomeViewState extends State<HomeView> {
                                 _house.update().then((v) {
                                   setState(() {
                                     _house = v;
+                                    print(
+                                        "HOUSE WAS UPDATED - HERE IS THE CODE: ${_house.code}");
                                   });
                                 });
                               });
@@ -92,10 +95,13 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ],
             ),
-            Text("Here are the last 10 messages:", style: Theme.of(context).textTheme.caption,),
+            Text(
+              "Here are the last 10 messages:",
+              style: Theme.of(context).textTheme.caption,
+            ),
             Expanded(
               child: ListView.builder(
-                itemBuilder: (c, i){
+                itemBuilder: (c, i) {
                   return MessageCard(_house.messages[i]);
                 },
                 itemCount: _house.messages.length,
@@ -132,12 +138,47 @@ class HomeSettings extends StatelessWidget {
             }),
             SettingComponent(
                 "Generate New Code", "Generate a new QR code", "Generate", () {
-              FirebaseFirestore.instance
-                  .collection("Houses")
-                  .doc(_house.id)
-                  .update({
-                "code": Uuid().v1(),
-              });
+              PopUp.confirm(
+                  "Generate new QR Code",
+                  "This means that a new QR code will be generated, please reprint the new QR code",
+                  "Yep Regenerate",
+                  "Cancel", () {
+                FirebaseFirestore.instance
+                    .collection("Houses")
+                    .doc(_house.id)
+                    .update({
+                  "code": Uuid().v1(),
+                });
+                Navigator.pop(context);
+                PopUp.errorPop(
+                    "New Code Generated",
+                    "QR Code has been Regenerated, please print off the new code",
+                    context);
+              }, () {
+                Navigator.pop(context);
+                PopUp.errorPop("Cancelled", "QR code regen cancelled", context);
+              }, context);
+            }),
+            SettingComponent(
+                "Change House Name",
+                "Change the name of the house. Come up with something creative!",
+                "Change", () {
+              PopUp.fullScreenPopUp(
+                  "New House Name",
+                  "The qr code doesn't change if you do this!",
+                  "Change", (TextEditingController t) {
+                FirebaseFirestore.instance
+                    .collection("Houses")
+                    .doc(_house.id)
+                    .update({
+                  "name": t.value.text,
+                });
+                Navigator.pop(context);
+                PopUp.errorPop("House Name Changed",
+                    "Your house is now named, ${t.value.text}", context);
+              }, (s) {
+                return s.isNotEmpty;
+              }, context);
             })
           ],
         ),
@@ -158,6 +199,7 @@ class MemberView extends StatefulWidget {
 class _MemberViewState extends State<MemberView> {
   String houseId;
   House house;
+  bool disposed;
 
   _MemberViewState(this.houseId);
 
@@ -165,14 +207,24 @@ class _MemberViewState extends State<MemberView> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    disposed = false;
     FirebaseFirestore.instance
         .collection("Houses")
         .doc(houseId)
         .snapshots()
         .listen((DocumentSnapshot ds) {
       this.house = House.fromMap(ds.data(), ds.id);
-      setState(() {});
+      if (!disposed) {
+        setState(() {});
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    disposed = true;
   }
 
   @override

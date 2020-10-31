@@ -13,7 +13,7 @@ class HouseCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(10.0),
-        margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+        margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
           border: Border.all(
@@ -21,33 +21,12 @@ class HouseCard extends StatelessWidget {
               width: 1.0,
               style: BorderStyle.solid),
         ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  house.name,
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                IntrinsicHeight(
-                  child: Row(
-                    children: [
-                      Text(
-                        house.members.length.toString(),
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      Icon(
-                        Icons.person,
-                        size: 32,
-                        color: Theme.of(context).primaryColor,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+        child: Center(
+          child: Text(
+            house.name,
+            style: Theme.of(context).textTheme.headline6,
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );

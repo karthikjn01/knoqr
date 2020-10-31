@@ -1,13 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diinq/Components/PopUp.dart';
 import 'package:diinq/Providers/UserData.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class Auth extends ChangeNotifier {
   AuthState currentState = AuthState.lUnknown;
   User user;
+  BuildContext context;
+
+  static Future<dynamic> handleBGMessage(Map<String, dynamic> message) {
+    print("backgroundMessage: $message");
+  }
 
   Auth() {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
@@ -22,21 +31,25 @@ class Auth extends ChangeNotifier {
 
         FirebaseMessaging().getToken().then((value) {
           print("VALUE_VALUE: $value");
-          FirebaseFirestore.instance.collection("People").doc(user.uid). set ({
-          "email": user.email, "uid": user.uid, "fcm": value
-          });
+          FirebaseFirestore.instance
+              .collection("People")
+              .doc(user.uid)
+              .set({"email": user.email, "uid": user.uid, "fcm": value});
         });
 
         FirebaseMessaging().onTokenRefresh.listen((event) {
-          FirebaseFirestore.instance.collection("People").doc(user.uid).set(
-              {"email": user.email, "uid": user.uid, "fcm": event});
+          FirebaseFirestore.instance
+              .collection("People")
+              .doc(user.uid)
+              .set({"email": user.email, "uid": user.uid, "fcm": event});
         });
 
         print(FirebaseMessaging().requestNotificationPermissions());
 
         FirebaseMessaging().configure(
+          // onBackgroundMessage: handleBGMessage,
           onMessage: (Map<String, dynamic> message) async {
-            print("onMessage: $message");
+            print("onMessage: $message context: ${this.context}");
           },
           onLaunch: (Map<String, dynamic> message) async {
             print("onLaunch: $message");
@@ -55,7 +68,7 @@ class Auth extends ChangeNotifier {
   Future<String> registerUsingEmail(String email, String password) async {
     try {
       UserCredential userCredential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -77,8 +90,8 @@ class Auth extends ChangeNotifier {
   }
 
   static Future<void> confirmReset(String code, String password) {
-    return FirebaseAuth.instance.confirmPasswordReset(
-        code: code, newPassword: password);
+    return FirebaseAuth.instance
+        .confirmPasswordReset(code: code, newPassword: password);
   }
 
   static Future<String> confirmResetCode(String code) {
@@ -92,7 +105,7 @@ class Auth extends ChangeNotifier {
   Future<String> signinUsingEmail(String email, String password) async {
     try {
       UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -111,15 +124,16 @@ class Auth extends ChangeNotifier {
     var _fcm = FirebaseMessaging();
 
     var token = await _fcm.getToken();
-    await FirebaseFirestore.instance.collection("People").doc(user.uid).set(
-        {"email": user.email, "uid": user.uid, "fcm": token});
+    await FirebaseFirestore.instance
+        .collection("People")
+        .doc(user.uid)
+        .set({"email": user.email, "uid": user.uid, "fcm": token});
   }
 
   Future<void> signOut(context) async {
     await FirebaseAuth.instance.signOut();
     Provider.of<UserData>(context, listen: false).clear();
   }
-
 }
 
 enum AuthState {

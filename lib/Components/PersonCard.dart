@@ -21,12 +21,17 @@ class PersonCard extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onClick,
-            child: Container(
-              height: 20,
-              width: 20,
-              child: Icon(
-                Icons.remove,
-                color: Colors.redAccent,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 30,
+                width: 30,
+                child: Center(
+                  child: Icon(
+                    Icons.remove,
+                    color: Colors.redAccent,
+                  ),
+                ),
               ),
             ),
           )

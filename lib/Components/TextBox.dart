@@ -36,7 +36,6 @@ class TextBox extends StatelessWidget {
             cursorColor: Theme.of(context).primaryColor,
             cursorRadius: Radius.circular(2.5),
             enableInteractiveSelection: false,
-
             decoration: InputDecoration(
                 border: InputBorder.none,
                 filled: false,
